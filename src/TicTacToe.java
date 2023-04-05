@@ -50,12 +50,15 @@ public class TicTacToe implements ActionListener{
 	}
 	
 	public void firstTurn() {
+		
+		disableButtons();
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		enableButtons();
 		
 		if(random.nextInt(2)==0) {
 			player1_turn = true;
@@ -181,6 +184,21 @@ public class TicTacToe implements ActionListener{
 				(buttons[6].getText()=="O")) {
 			oWins(2,4,6);
 		}
+		
+		// check for tie
+		
+		for(int i=0; i<9; i++) {
+			if(buttons[i].getText().isBlank()) {
+				break;
+			}
+			
+			// check if all buttons are filled
+		
+			if(i==8) {
+				disableButtons();
+				textfield.setText("Tie");
+			}
+		}
 	}
 	
 	public void xWins(int a, int b, int c) {
@@ -188,9 +206,7 @@ public class TicTacToe implements ActionListener{
 		buttons[b].setBackground(Color.green);
 		buttons[c].setBackground(Color.green);
 		
-		for(int i=0; i<9; i++) {
-			buttons[i].setEnabled(false);
-		}
+		disableButtons();
 		
 		textfield.setText("X wins");
 	}
@@ -200,9 +216,7 @@ public class TicTacToe implements ActionListener{
 		buttons[b].setBackground(Color.green);
 		buttons[c].setBackground(Color.green);
 		
-		for(int i=0; i<9; i++) {
-			buttons[i].setEnabled(false);
-		}
+		disableButtons();
 		
 		textfield.setText("O wins");
 	}
@@ -213,7 +227,7 @@ public class TicTacToe implements ActionListener{
 		for(int i=0; i<9; i++) {
 			if(e.getSource()==buttons[i]) {
 				if(player1_turn) {
-					if(buttons[i].getText()=="") {
+					if(buttons[i].getText().isBlank()) {
 						buttons[i].setForeground(new Color(255,0,0));
 						buttons[i].setText("X");
 						player1_turn = false;
@@ -222,7 +236,7 @@ public class TicTacToe implements ActionListener{
 					}
 				}
 				else {
-					if(buttons[i].getText()=="") {
+					if(buttons[i].getText().isBlank()) {
 						buttons[i].setForeground(new Color(0,0,255));
 						buttons[i].setText("O");
 						player1_turn = true;
@@ -233,6 +247,18 @@ public class TicTacToe implements ActionListener{
 			}
 		}
 		
+	}
+	
+	public void disableButtons() {
+		for(int i=0; i<9; i++) {
+			buttons[i].setEnabled(false);
+		}
+	}
+	
+	public void enableButtons() {
+		for(int i=0; i<9; i++) {
+			buttons[i].setEnabled(true);
+		}
 	}
 	
 	
