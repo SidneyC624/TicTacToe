@@ -9,14 +9,23 @@ public class TicTacToe extends JFrame implements ActionListener{
 	Board button_panel;
 	JButton resetButton;
 	
-	Random random = new Random();
+	Random random;
 	boolean player1_turn;
+	int[][] winCombArray = {{0,1,2}, {3,4,5}, {6,7,8}, {0,3,6}, {1,4,7}, {2,5,8}, {0,4,8}, {2,4,6}};;
+	ArrayList<Integer> xArrayList;
+	ArrayList<Integer> oArrayList;
+	int winComb;
+	boolean win = false;
 	
 	TicTacToe() {
 		
 		title_panel = new Title();
 		button_panel = new Board();
 		resetButton = new JButton();
+		
+		random = new Random();
+		xArrayList = new ArrayList<Integer>();
+		oArrayList = new ArrayList<Integer>();
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(900, 800);
@@ -26,6 +35,8 @@ public class TicTacToe extends JFrame implements ActionListener{
 		
 		resetButton.setText("Reset");
 		resetButton.setBounds(0,0,100,100);
+		resetButton.setFont(new Font("Ink Free", Font.PLAIN, 20));
+		resetButton.setFocusable(false);
 		resetButton.addActionListener(this);
 		
 		for(int i=0; i<9; i++) {
@@ -60,139 +71,24 @@ public class TicTacToe extends JFrame implements ActionListener{
 		}
 	}
 	
-	// both
-	public void check() {
-		// check if x wins
-		if(
-				(button_panel.buttons[0].getText()=="X") && 
-				(button_panel.buttons[1].getText()=="X") && 
-				(button_panel.buttons[2].getText()=="X")) {
-			xWins(0,1,2);
-		}
-		
-		if(
-				(button_panel.buttons[3].getText()=="X") && 
-				(button_panel.buttons[4].getText()=="X") && 
-				(button_panel.buttons[5].getText()=="X")) {
-			xWins(3,4,5);
-		}
-		
-		if(
-				(button_panel.buttons[6].getText()=="X") && 
-				(button_panel.buttons[7].getText()=="X") && 
-				(button_panel.buttons[8].getText()=="X")) {
-			xWins(6,7,8);
-		}
-		
-		if(
-				(button_panel.buttons[0].getText()=="X") && 
-				(button_panel.buttons[3].getText()=="X") && 
-				(button_panel.buttons[6].getText()=="X")) {
-			xWins(0,3,6);
-		}
-		
-		if(
-				(button_panel.buttons[1].getText()=="X") && 
-				(button_panel.buttons[4].getText()=="X") && 
-				(button_panel.buttons[7].getText()=="X")) {
-			xWins(1,4,7);
-		}
-		
-		if(
-				(button_panel.buttons[2].getText()=="X") && 
-				(button_panel.buttons[5].getText()=="X") && 
-				(button_panel.buttons[8].getText()=="X")) {
-			xWins(2,5,8);
-		}
-		
-		if(
-				(button_panel.buttons[0].getText()=="X") && 
-				(button_panel.buttons[4].getText()=="X") && 
-				(button_panel.buttons[8].getText()=="X")) {
-			xWins(0,4,8);
-		}
-		
-		if(
-				(button_panel.buttons[2].getText()=="X") && 
-				(button_panel.buttons[4].getText()=="X") && 
-				(button_panel.buttons[6].getText()=="X")) {
-			xWins(2,4,6);
-		}
-		
-		// check if o wins
-		if(
-				(button_panel.buttons[0].getText()=="O") && 
-				(button_panel.buttons[1].getText()=="O") && 
-				(button_panel.buttons[2].getText()=="O")) {
-			oWins(0,1,2);
-		}
-		
-		if(
-				(button_panel.buttons[3].getText()=="O") && 
-				(button_panel.buttons[4].getText()=="O") && 
-				(button_panel.buttons[5].getText()=="O")) {
-			oWins(3,4,5);
-		}
-		
-		if(
-				(button_panel.buttons[6].getText()=="O") && 
-				(button_panel.buttons[7].getText()=="O") && 
-				(button_panel.buttons[8].getText()=="O")) {
-			oWins(6,7,8);
-		}
-		
-		if(
-				(button_panel.buttons[0].getText()=="O") && 
-				(button_panel.buttons[3].getText()=="O") && 
-				(button_panel.buttons[6].getText()=="O")) {
-			oWins(0,3,6);
-		}
-		
-		if(
-				(button_panel.buttons[1].getText()=="O") && 
-				(button_panel.buttons[4].getText()=="O") && 
-				(button_panel.buttons[7].getText()=="O")) {
-			oWins(1,4,7);
-		}
-		
-		if(
-				(button_panel.buttons[2].getText()=="O") && 
-				(button_panel.buttons[5].getText()=="O") && 
-				(button_panel.buttons[8].getText()=="O")) {
-			oWins(2,5,8);
-		}
-		
-		if(
-				(button_panel.buttons[0].getText()=="O") && 
-				(button_panel.buttons[4].getText()=="O") && 
-				(button_panel.buttons[8].getText()=="O")) {
-			oWins(0,4,8);
-		}
-		
-		if(
-				(button_panel.buttons[2].getText()=="O") && 
-				(button_panel.buttons[4].getText()=="O") && 
-				(button_panel.buttons[6].getText()=="O")) {
-			oWins(2,4,6);
-		}
-		
-		// check for tie
-		
-		for(int i=0; i<9; i++) {
-			if(button_panel.buttons[i].getText().isBlank()) {
-				break;
-			}
-		
-			if(
-					i==8 && 
-					title_panel.textfield.getText()!="X wins" &&
-					title_panel.textfield.getText()!="O wins"	
-					// ensures buttons are filled and no player has won
-					) {
-				button_panel.disableButtons();
-				title_panel.textfield.setText("Tie");
+	public boolean checkWin(ArrayList<Integer> arrayList) {
+		// check if x or o wins
+		for(int i=0; i<8; i++) {
+			for(int j=0; j<3; j++) {
+				if(arrayList.contains(winCombArray[i][j])) {
+					if(j==2) {
+						winComb = i;
+						win = true;
+						// accelerate outer loop to terminate
+						i = 7;
+					}
+				}
+				else {
+					break;
+				}
 			}
 		}
+		return win;
 	}
 	
 	public void xWins(int a, int b, int c) {
@@ -205,7 +101,6 @@ public class TicTacToe extends JFrame implements ActionListener{
 		title_panel.textfield.setText("X wins");
 	}
 	
-	// both
 	public void oWins(int a, int b, int c) {
 		button_panel.buttons[a].setBackground(Color.green);
 		button_panel.buttons[b].setBackground(Color.green);
@@ -216,30 +111,58 @@ public class TicTacToe extends JFrame implements ActionListener{
 		title_panel.textfield.setText("O wins");
 	}
 
+	public void checkTie() {
+		for(int j=0; j<9; j++) {
+			if(button_panel.buttons[j].getText().isBlank()) {
+				break;
+			}
+		
+			if(
+					j==8 && 
+					title_panel.textfield.getText()!="X wins" &&
+					title_panel.textfield.getText()!="O wins"	
+					// ensures buttons are filled and no player has won
+					) {
+				button_panel.disableButtons();
+				title_panel.textfield.setText("Tie");
+			}
+		}
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
 		for(int i=0; i<9; i++) {
-			if(e.getSource()==button_panel.buttons[i]) {
+			if(e.getSource()==button_panel.buttons[i] &&
+					button_panel.buttons[i].getText().isBlank()) {
 				if(player1_turn) {
-					if(button_panel.buttons[i].getText().isBlank()) {
-						button_panel.buttons[i].setForeground(new Color(255,0,0));
-						button_panel.buttons[i].setText("X");
-						player1_turn = false;
-						title_panel.textfield.setText("O turn");
-						check();
+					
+					button_panel.buttons[i].setForeground(new Color(255,0,0));
+					button_panel.buttons[i].setText("X");
+					player1_turn = false;
+					title_panel.textfield.setText("O turn");
+					xArrayList.add(i);
+					if(checkWin(xArrayList)) {
+						xWins(winCombArray[winComb][0], 
+								winCombArray[winComb][1], 
+								winCombArray[winComb][2]);
 					}
 				}
 				else {
-					if(button_panel.buttons[i].getText().isBlank()) {
-						button_panel.buttons[i].setForeground(new Color(0,0,255));
-						button_panel.buttons[i].setText("O");
-						player1_turn = true;
-						title_panel.textfield.setText("X turn");
-						check();
+					button_panel.buttons[i].setForeground(new Color(0,0,255));
+					button_panel.buttons[i].setText("O");
+					player1_turn = true;
+					title_panel.textfield.setText("X turn");
+					oArrayList.add(i);
+					if(checkWin(oArrayList)) {
+						oWins(winCombArray[winComb][0], 
+								winCombArray[winComb][1], 
+								winCombArray[winComb][2]);
 					}
 				}
+				checkTie();
 			}
+			
 		}
 		
 		// reset button
